@@ -112,7 +112,7 @@ class Sale {
       invoiceNumber: map['invoiceNumber'] as String,
       dateTime: DateTime.parse(map['dateTime'] as String),
       items: (map['items'] as List<dynamic>)
-          .map((item) => SaleItem.fromMap(item as Map<String, dynamic>))
+          .map((item) => SaleItem.fromMap(Map<String, dynamic>.from(item as Map)))
           .toList(),
       paymentMethod: PaymentMethod.fromString(map['paymentMethod'] as String),
       customerName: map['customerName'] as String?,

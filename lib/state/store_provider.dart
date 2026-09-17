@@ -4,6 +4,7 @@ import '../models/product.dart';
 import '../models/sale.dart';
 import '../models/purchase.dart';
 import '../services/database_service.dart';
+import '../services/backup_service.dart';
 import '../utils/formatters.dart';
 
 class StoreProvider extends ChangeNotifier {
@@ -12,13 +13,29 @@ class StoreProvider extends ChangeNotifier {
   List<Purchase> _purchases = [];
   double _cashInHand = 0.0;
   bool _isLoading = true;
+  bool _isDisposed = false;
+  Future<void>? _initFuture;
 
   StoreProvider() {
-    _initData();
+    _initFuture = initData();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) {
+      super.notifyListeners();
+    }
   }
 
   // Getters
   bool get isLoading => _isLoading;
+  Future<void> get initialized => _initFuture ?? Future.value();
   List<Product> get products => List.unmodifiable(_products);
   List<Sale> get sales => List.unmodifiable(_sales);
   List<Purchase> get purchases => List.unmodifiable(_purchases);
@@ -250,7 +267,8 @@ class StoreProvider extends ChangeNotifier {
 
   // ==================== HIVE DATABASE SYNC ====================
 
-  Future<void> _initData() async {
+  /// Load or reload data from Hive local storage
+  Future<void> initData() async {
     _isLoading = true;
     notifyListeners();
 
@@ -288,6 +306,13 @@ class StoreProvider extends ChangeNotifier {
     _purchases = [];
     _cashInHand = 0.0;
     notifyListeners();
+  }
+
+  /// Restore store database from JSON backup string and reload state
+  Future<BackupSummary> restoreFromBackupJson(String jsonString) async {
+    final summary = await BackupService.instance.restoreFromJsonString(jsonString);
+    await initData();
+    return summary;
   }
 }
 

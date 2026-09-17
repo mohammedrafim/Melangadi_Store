@@ -6,6 +6,9 @@ import '../../theme/app_theme.dart';
 import '../../utils/formatters.dart';
 import '../products/product_form_dialog.dart';
 import '../sales/sale_receipt_dialog.dart';
+import '../../services/preferences_service.dart';
+import 'backup_restore_dialog.dart';
+import 'preferences_dialog.dart';
 
 class DashboardScreen extends StatefulWidget {
   final Function(int tabIndex) onNavigateToTab;
@@ -151,6 +154,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onSelected: (val) {
               if (val == 'adjust_cash') {
                 _showCashAdjustDialog(context, store);
+              } else if (val == 'backup_restore') {
+                BackupRestoreDialog.show(context);
+              } else if (val == 'preferences') {
+                PreferencesDialog.show(context).then((_) => setState(() {}));
               } else if (val == 'clear_all') {
                 _showClearDataDialog(context, store);
               }
@@ -166,6 +173,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ],
                 ),
               ),
+              const PopupMenuItem(
+                value: 'backup_restore',
+                child: Row(
+                  children: [
+                    Icon(Icons.sync_alt, size: 18, color: AppColors.primary),
+                    SizedBox(width: 8),
+                    Text('Backup & Restore Data'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'preferences',
+                child: Row(
+                  children: [
+                    Icon(Icons.settings_outlined, size: 18, color: AppColors.textPrimary),
+                    SizedBox(width: 8),
+                    Text('Store Settings'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
               const PopupMenuItem(
                 value: 'clear_all',
                 child: Row(

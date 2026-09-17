@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'screens/main_navigation_screen.dart';
 import 'services/database_service.dart';
+import 'services/preferences_service.dart';
 import 'state/store_provider.dart';
 import 'theme/app_theme.dart';
 
@@ -14,8 +15,9 @@ void main() async {
     ),
   );
 
-  // Initialize Hive NoSQL Database
+  // Initialize Hive NoSQL Database and SharedPreferences
   await DatabaseService.instance.init();
+  await PreferencesService.instance.init();
 
   runApp(const MelangadiStoreApp());
 }

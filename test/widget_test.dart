@@ -1,8 +1,28 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:melangadi_store/main.dart';
+import 'package:melangadi_store/services/database_service.dart';
+import 'package:melangadi_store/services/preferences_service.dart';
 
 void main() {
+  late Directory tempDir;
+
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+    await PreferencesService.instance.init();
+
+    tempDir = Directory.systemTemp.createTempSync('melangadi_widget_test_');
+    await DatabaseService.instance.init(tempDir.path);
+  });
+
+  tearDownAll(() async {
+    try {
+      tempDir.deleteSync(recursive: true);
+    } catch (_) {}
+  });
+
   testWidgets('Melangadi Store App renders Dashboard and Navigation tabs', (WidgetTester tester) async {
     await tester.pumpWidget(const MelangadiStoreApp());
     await tester.pumpAndSettle();
